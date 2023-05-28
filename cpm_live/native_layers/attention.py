@@ -71,12 +71,18 @@ class Attention(torch.nn.Module):
         len_q = hidden_q.size(1)
         len_k = hidden_kv.size(1)
 
+        # (b, len_q, num_heads*dim_head)
         h_q = self.project_q(hidden_q)
+        # (b, len_k, num_heads*dim_head)
         h_k = self.project_k(hidden_kv)
+        # (b, len_k, num_heads*dim_head)
         h_v = self.project_v(hidden_kv)
 
+        # (b, num_heads, len_q, dim_head)
         h_q = h_q.view(batch_size, len_q, self.num_heads, self.dim_head).permute(0, 2, 1, 3)
+        # (b, num_heads, len_k, dim_head)
         h_k = h_k.view(batch_size, len_k, self.num_heads, self.dim_head).permute(0, 2, 1, 3)
+        # (b, num_heads, len_k, dim_head)
         h_v = h_v.view(batch_size, len_k, self.num_heads, self.dim_head).permute(0, 2, 1, 3)
 
         if past_kv is not None:
@@ -107,9 +113,11 @@ class Attention(torch.nn.Module):
         # (b, n_h, len_q, len_k) @ (b, n_h, len_k, d_h) -> (b, n_h, len_q, d_h)
         score = torch.matmul(score, h_v)
 
+        # (n, len_q, num_heads, dim_head)
         score = score.view(batch_size, self.num_heads, len_q, self.dim_head).permute(0, 2, 1, 3)
         score = score.contiguous().view(batch_size, len_q, self.num_heads * self.dim_head)
 
+        # (n, len_q, dim_model)
         score = self.attention_out(score)
         if use_cache:
             return score, (h_k, h_v)

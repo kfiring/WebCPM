@@ -8,8 +8,8 @@ wget -O model_part5.pt https://cloud.tsinghua.edu.cn/f/7bb89263ff4a40cdb2be/?dl=
 
 python combine_pipeline_finetuned.py
 
-rm model_part1.pt
-rm model_part2.pt
-rm model_part3.pt
-rm model_part4.pt
-rm model_part5.pt
+# rm model_part1.pt
+# rm model_part2.pt
+# rm model_part3.pt
+# rm model_part4.pt
+# rm model_part5.pt
